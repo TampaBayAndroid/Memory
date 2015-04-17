@@ -3,4 +3,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="new_game_button">New Game</string>
+    <string name="winner_popup">Winner!</string>
 </resources>
