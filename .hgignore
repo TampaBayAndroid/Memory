@@ -1,12 +1,21 @@
+syntax: glob
+
+.git
+
+# mercurial revert
+**/*.orig
+
+#### Android ####
+
 # Built application files
-*.apk
-*.ap_
+**/*.apk
+**/*.ap_
 
 # Files for the Dalvik VM
-*.dex
+**/*.dex
 
 # Java class files
-*.class
+**/*.class
 
 # Generated files
 bin/
@@ -15,7 +24,7 @@ gen/
 # Gradle files
 .gradle/
 build/
-/*/build/
+**/build/
 
 # Local configuration file (sdk path, etc)
 local.properties
@@ -24,8 +33,21 @@ local.properties
 proguard/
 
 # Log Files
-*.log
+**/*.log
 
+
+# Crashlytics configuations
+com_crashlytics_export_strings.xml
+ 
+# Local configuration file (sdk path, etc)
+local.properties
+ 
+# Gradle generated files
+.gradle/
+ 
+# Signing files
+.signing/
+ 
 # User-specific configurations
 .idea/libraries/
 .idea/workspace.xml
@@ -38,7 +60,15 @@ proguard/
 .idea/modules.xml
 .idea/scopes/scope_settings.xml
 .idea/vcs.xml
-*.iml
+**/*.iml
+ 
+# OS-specific files
+**/.DS_Store
+**/.DS_Store?
+**/._*
+**/.Spotlight-V100
+**/.Trashes
+**/ehthumbs.db
+**/Thumbs.db
 
-# Mercurial files
-.hg/
+
