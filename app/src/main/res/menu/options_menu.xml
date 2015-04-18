@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/menu_rows"
+        android:actionLayout="@layout/rows"
+        android:title="@string/menu_rows"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_cols"
+        android:actionLayout="@layout/cols"
+        android:title="@string/menu_cols"
+        android:showAsAction="always" />
+
+    <item
+        android:id="@+id/menu_about"
+        android:title="@string/menu_about"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/menu_help"
+        android:title="@string/menu_help"
+        android:showAsAction="never" />
+
+</menu>
