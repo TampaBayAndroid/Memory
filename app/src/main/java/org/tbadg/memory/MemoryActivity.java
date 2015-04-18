@@ -28,8 +28,8 @@ import java.util.Random;
 public class MemoryActivity extends Activity implements TextView.OnEditorActionListener {
     private static final String TAG = "MemoryActivity";
 
-    private static final int DEFAULT_NUM_ROWS = 3;
-    private static final int DEFAULT_NUM_COLS = 5;
+    private static final int DEFAULT_NUM_ROWS = 4;
+    private static final int DEFAULT_NUM_COLS = 4;
     private static final int CARDS_MATCHED_TIMEOUT_IN_MILLIS = 250;
     private static final int NO_MATCH_TIMEOUT_IN_MILLIS = 1000;
 
@@ -77,10 +77,12 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         EditText rows = (EditText) menu.findItem(R.id.menu_rows)
                                        .getActionView().findViewById(R.id.rows);
         rows.setOnEditorActionListener(this);
+        rows.setText(String.valueOf(mNumRows));
 
         EditText cols = (EditText) menu.findItem(R.id.menu_cols)
                                         .getActionView().findViewById(R.id.cols);
         cols.setOnEditorActionListener(this);
+        cols.setText(String.valueOf(mNumCols));
 
         return(super.onCreateOptionsMenu(menu));
     }
