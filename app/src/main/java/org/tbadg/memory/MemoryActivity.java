@@ -298,14 +298,15 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     @SuppressWarnings("CanBeFinal")
     private View.OnTouchListener cardOnTouchListener = new View.OnTouchListener() {
         @Override
+        // TODO: synchronized?
         synchronized public boolean onTouch(View v, MotionEvent event) {
             // Return true to consume the event, false to pass it on for further handling.
 
-            // Ignore everything but up events:
+            // Ignore everything but down events
             if (event.getAction() != MotionEvent.ACTION_DOWN)
                 return true;
 
-            // Don't allow the same or third card to be selected again:
+            // Don't allow the same card or more than two cards
             if (v.equals(mFirstCard) || mSecondCard != null)
                 return true;
 
@@ -338,7 +339,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private final Runnable hideCards = new Runnable() {
         @Override
         public void run() {
-            // Hide selected mCards:
+            // Hide selected cards
             hideCard(mFirstCard);
             hideCard(mSecondCard);
 
@@ -350,7 +351,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private final Runnable flipCards = new Runnable() {
         @Override
         public void run() {
-            // Flip selected mCards:
+            // Flip selected cards
             showCardBack(mFirstCard);
             showCardBack(mSecondCard);
 
