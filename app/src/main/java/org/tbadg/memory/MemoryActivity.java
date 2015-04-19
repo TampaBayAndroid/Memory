@@ -314,17 +314,21 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             } else {
                 Log.d(TAG, "Second card is " + card.getTag());
                 mSecondCard = card;
-
-                // Do mCards match?
-                if (mFirstCard.getTag().equals(mSecondCard.getTag()))
-                    doMatch();
-                else
-                    doNoMatch();
+                handleMatch(mFirstCard, mSecondCard);
             }
 
             return true;
         }
     };
+
+    private final void handleMatch(Button firstCard, Button secondCard) {
+        String first = (String) firstCard.getTag();
+        String second = (String) secondCard.getTag();
+        if (first.equals(second))
+            doMatch();
+        else
+            doNoMatch();
+    }
 
     private final Runnable hideCards = new Runnable() {
         @Override
