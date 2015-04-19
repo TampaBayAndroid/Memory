@@ -108,7 +108,10 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int num = DEFAULT_NUM_ROWS;
-        if (actionId == EditorInfo.IME_ACTION_DONE) {
+        boolean keyEventEnterUp = actionId == EditorInfo.IME_ACTION_UNSPECIFIED
+                && event.getAction() == KeyEvent.ACTION_UP
+                && event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
+        if (actionId == EditorInfo.IME_ACTION_DONE || keyEventEnterUp) {
             try {
                 num  = Integer.valueOf(v.getText().toString());
                 if (num < 2)
@@ -128,6 +131,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
                 mNumRows = num;
             else if (v.getId() == R.id.cols)
                 mNumCols = num;
+
+            newGame();
         }
 
         return(true);
