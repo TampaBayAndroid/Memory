@@ -2,25 +2,36 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/menu_new"
+        android:icon="@drawable/ic_action_replay"
+        android:title="@string/menu_new"
+        android:orderInCategory="1"
+        android:showAsAction="always|withText" />
+
+    <item
         android:id="@+id/menu_rows"
         android:actionLayout="@layout/rows"
         android:title="@string/menu_rows"
+        android:orderInCategory="2"
         android:showAsAction="always" />
 
     <item
         android:id="@+id/menu_cols"
         android:actionLayout="@layout/cols"
         android:title="@string/menu_cols"
+        android:orderInCategory="3"
         android:showAsAction="always" />
 
     <item
         android:id="@+id/menu_about"
         android:title="@string/menu_about"
+        android:orderInCategory="11"
         android:showAsAction="never" />
 
     <item
         android:id="@+id/menu_help"
         android:title="@string/menu_help"
+        android:orderInCategory="12"
         android:showAsAction="never" />
 
 </menu>

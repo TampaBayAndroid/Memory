@@ -80,11 +80,11 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         rows.setText(String.valueOf(mNumRows));
 
         EditText cols = (EditText) menu.findItem(R.id.menu_cols)
-                                        .getActionView().findViewById(R.id.cols);
+                                       .getActionView().findViewById(R.id.cols);
         cols.setOnEditorActionListener(this);
         cols.setText(String.valueOf(mNumCols));
 
-        return(super.onCreateOptionsMenu(menu));
+        return (super.onCreateOptionsMenu(menu));
     }
 
     @Override
@@ -93,6 +93,10 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         switch (item.getItemId()) {
+
+            case R.id.menu_new:
+                newGame();
+                break;
 
             case R.id.menu_about:
                 handleAbout();
@@ -105,15 +109,17 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
         int num = DEFAULT_NUM_ROWS;
+
         boolean keyEventEnterUp = actionId == EditorInfo.IME_ACTION_UNSPECIFIED
                 && event.getAction() == KeyEvent.ACTION_UP
                 && event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
         if (actionId == EditorInfo.IME_ACTION_DONE || keyEventEnterUp) {
             try {
-                num  = Integer.valueOf(v.getText().toString());
+                num = Integer.valueOf(v.getText().toString());
                 if (num < 2)
                     num = 2;
                 else if (num > 10)
@@ -135,7 +141,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             newGame();
         }
 
-        return(true);
+        return (true);
     }
 
     private void handleAbout() {
@@ -226,11 +232,6 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             values.add(i);
         }
 
-        Log.e(TAG, "mNumRows=" + mNumRows);
-        Log.e(TAG, "mNumCols=" + mNumCols);
-        Log.e(TAG, "mMatchesShown=" + mMatchesShown);
-        Log.e(TAG, "values.size()=" + values.size());
-
         // For each card:
         for (int i = mCards.getChildCount() - 1; i >= 0; --i) {
             LinearLayout row = (LinearLayout) mCards.getChildAt(i);
@@ -239,7 +240,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
                 Button card = (Button) row.getChildAt(j);
 
                 // Leave the bottom middle space empty if there's an odd number of mCards:
-                if (mEmptySpot && i == mNumRows - 1 && j == mNumCols / 2) {
+                if (mEmptySpot && i == mNumRows / 2 && j == mNumCols / 2) {
                     hideCard(card);
 
                 } else {

@@ -33,15 +33,4 @@
             android:onClick="doNewGame"
             android:text="@string/winner_popup"/>
     </FrameLayout>
-
-    <Button
-        android:id="@+id/new_game"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/activity_vertical_margin"
-        android:layout_gravity="right"
-        tools:ignore="RtlHardcoded"
-        android:onClick="doNewGame"
-        android:text="@string/new_game_button"/>
-
 </LinearLayout>

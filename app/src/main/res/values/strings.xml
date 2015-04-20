@@ -5,6 +5,7 @@
     <string name="new_game_button">New Game</string>
     <string name="winner_popup">Winner!</string>
 
+    <string name="menu_new">New Game</string>
     <string name="menu_rows">Rows:</string>
     <string name="menu_cols">Cols:</string>
     <string name="menu_about">Show About</string>
