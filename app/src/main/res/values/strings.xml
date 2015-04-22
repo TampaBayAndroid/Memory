@@ -6,8 +6,7 @@
     <string name="winner_popup">Winner!</string>
 
     <string name="menu_new">New Game</string>
-    <string name="menu_rows">Rows:</string>
-    <string name="menu_cols">Cols:</string>
+    <string name="menu_matches">Matches:</string>
     <string name="menu_about">Show About</string>
     <string name="menu_help">Show Help</string>
 
@@ -16,5 +15,4 @@
 
     <string name="msg_about">Running version:\u0020</string>
     <string name="url_help">https://github.com/TampaBayAndroid/Memory</string>
-
 </resources>

@@ -44,3 +44,6 @@ proguard/
 
 # Mercurial files
 .hg/
+
+# A place for untracked files
+work/

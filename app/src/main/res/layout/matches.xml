@@ -9,10 +9,10 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_marginStart="@dimen/activity_horizontal_margin"
-        android:text="@string/menu_rows" />
+        android:text="@string/menu_matches" />
 
     <EditText
-        android:id="@+id/rows"
+        android:id="@+id/matches"
         android:layout_width="0px"
         android:layout_height="wrap_content"
         android:layout_weight="1"

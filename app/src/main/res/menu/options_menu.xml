@@ -9,17 +9,10 @@
         android:showAsAction="always|withText" />
 
     <item
-        android:id="@+id/menu_rows"
-        android:actionLayout="@layout/rows"
-        android:title="@string/menu_rows"
+        android:id="@+id/menu_matches"
+        android:actionLayout="@layout/matches"
+        android:title="@string/menu_matches"
         android:orderInCategory="2"
-        android:showAsAction="always" />
-
-    <item
-        android:id="@+id/menu_cols"
-        android:actionLayout="@layout/cols"
-        android:title="@string/menu_cols"
-        android:orderInCategory="3"
         android:showAsAction="always" />
 
     <item

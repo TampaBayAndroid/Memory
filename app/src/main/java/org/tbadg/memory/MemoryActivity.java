@@ -3,9 +3,11 @@ package org.tbadg.memory;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,8 +30,7 @@ import java.util.Random;
 public class MemoryActivity extends Activity implements TextView.OnEditorActionListener {
     private static final String TAG = "MemoryActivity";
 
-    private static final int DEFAULT_NUM_ROWS = 4;
-    private static final int DEFAULT_NUM_COLS = 4;
+    private static final int DEFAULT_NUM_MATCHES = 8;
     private static final int CARDS_MATCHED_TIMEOUT_IN_MILLIS = 250;
     private static final int NO_MATCH_TIMEOUT_IN_MILLIS = 1000;
 
@@ -39,12 +40,13 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private Button mFirstCard;
     private Button mSecondCard;
 
-    private int mNumRows = DEFAULT_NUM_ROWS;
-    private int mNumCols = DEFAULT_NUM_COLS;
+    private int mNumMatches = DEFAULT_NUM_MATCHES;
+    private int mNumRows;
+    private int mNumCols;
     private int mPrevRows;
     private int mPrevCols;
 
-    private boolean mEmptySpot;
+    private int mEmptySpots;
     private int mMatchesShown;
 
     private final Random mRandom = new Random();
@@ -61,7 +63,6 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
         // Clicking the popup or newGame buttons starts a new game:
         mPopupBtn = (Button) findViewById(R.id.popup);
-
         newGame();
     }
 
@@ -74,15 +75,11 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.options_menu, menu);
 
-        EditText rows = (EditText) menu.findItem(R.id.menu_rows)
-                                       .getActionView().findViewById(R.id.rows);
-        rows.setOnEditorActionListener(this);
-        rows.setText(String.valueOf(mNumRows));
+        EditText matches = (EditText) menu.findItem(R.id.menu_matches)
+                                       .getActionView().findViewById(R.id.matches);
+        matches.setOnEditorActionListener(this);
+        matches.setText(String.valueOf(mNumRows));
 
-        EditText cols = (EditText) menu.findItem(R.id.menu_cols)
-                                       .getActionView().findViewById(R.id.cols);
-        cols.setOnEditorActionListener(this);
-        cols.setText(String.valueOf(mNumCols));
 
         return (super.onCreateOptionsMenu(menu));
     }
@@ -112,19 +109,19 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        int num = DEFAULT_NUM_ROWS;
+        int matches = DEFAULT_NUM_MATCHES;
 
         boolean keyEventEnterUp = actionId == EditorInfo.IME_ACTION_UNSPECIFIED
                 && event.getAction() == KeyEvent.ACTION_UP
                 && event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
         if (actionId == EditorInfo.IME_ACTION_DONE || keyEventEnterUp) {
             try {
-                num = Integer.valueOf(v.getText().toString());
-                if (num < 2)
-                    num = 2;
-                else if (num > 10)
-                    num = 10;
-                v.setText(String.valueOf(num));
+                matches = Integer.valueOf(v.getText().toString());
+                if (matches < 2)
+                    matches = 2;
+                else if (matches > 24)
+                    matches = 24;
+                v.setText(String.valueOf(matches));
 
             } catch (NumberFormatException e) {
                 /* Shouldn't be able to get here */
@@ -133,10 +130,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
 
-            if (v.getId() == R.id.rows)
-                mNumRows = num;
-            else if (v.getId() == R.id.cols)
-                mNumCols = num;
+            if (v.getId() == R.id.matches)
+                mNumMatches = matches;
 
             newGame();
         }
@@ -189,16 +184,18 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
                 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                                                 ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
 
-        // Is there an odd number of mCards, requiring an empty space?
-        mEmptySpot = (mNumRows * mNumCols) % 2 == 1;
+        Log.d(TAG, String.format("Building a %d x %d board", mNumRows, mNumCols));
 
-        // Create mNumRows rows of mCards:
+        // Are there too few cards to fill the board?
+        mEmptySpots = (mNumRows * mNumCols) - (mNumMatches * 2);
+
+        // Create mNumRows rows of cards:
         for (int i = 0; i < mNumRows; i++) {
             LinearLayout row = new LinearLayout(this);
             row.setOrientation(LinearLayout.HORIZONTAL);
             mCards.addView(row, params);
 
-            // Create mNumCols mCards per row:
+            // Create mNumCols cards per row:
             for (int j = 0; j < mNumCols; j++) {
                 Button card = getCard();
                 row.addView(card, params);
@@ -208,23 +205,27 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     }
 
     private void newGame() {
-        if (mNumRows != mPrevRows || mNumCols != mPrevCols) {
-            Log.d(TAG, String.format("Creating new %dx%d board ", mNumRows, mNumCols));
-            createBoard();
+        Log.d(TAG, String.format("Starting new game for %d matches", mNumMatches));
 
+        Pair<Integer, Integer> dims = getDimensions(mNumMatches);
+        mNumRows = dims.first;
+        mNumCols = dims.second;
+
+        if (mNumRows != mPrevRows || mNumCols != mPrevCols) {
             mPrevRows = mNumRows;
             mPrevCols = mNumCols;
+            createBoard();
         }
 
         mPopupBtn.setVisibility(View.INVISIBLE);
 
         // Reset the game state:
-        mMatchesShown = mNumRows * mNumCols / 2;
+        mMatchesShown = mNumMatches;
         mFirstCard = null;
         mSecondCard = null;
 
         // Create a list with two copies of each possible card value. We'll randomly
-        //  select and remove these values later to give them to the mCards.
+        //  select and remove these values later to give them to the cards.
         // e.g. 3 matches == { 0, 0, 1, 1, 2, 2 }:
         List<Integer> values = new ArrayList<>(mMatchesShown);
         for (int i = 0; i < mMatchesShown; i++) {
@@ -239,8 +240,9 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             for (int j = row.getChildCount() - 1; j >= 0; --j) {
                 Button card = (Button) row.getChildAt(j);
 
-                // Leave the bottom middle space empty if there's an odd number of mCards:
-                if (mEmptySpot && i == mNumRows / 2 && j == mNumCols / 2) {
+                // Hide the bottom corners or the middle space if empty spots are required:
+                if ((mEmptySpots == 2 && i == mNumRows - 1 && (j == 0 || j == mNumCols - 1))
+                        || (mEmptySpots == 1 && i == mNumRows / 2 && j == mNumCols / 2)) {
                     hideCard(card);
 
                 } else {
@@ -286,6 +288,28 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         new Handler().postDelayed(flipCards, NO_MATCH_TIMEOUT_IN_MILLIS);
     }
 
+    private Pair<Integer, Integer> getDimensions(int numMatches) {
+        // Returns a pair of dimensions for 2-24 matches. It is the caller's responsibility
+        // to ensure that the input number is within the acceptable range.
+
+        // The orientation of the results is tied to the current orientation of the device.
+
+        final int[][] boardSizes= {
+                // Boards for 4, 7, 17, and 22 matches will have 1 spot empty
+                // Boards for 5, 11, 13, 19, and 23 matches will have 2 spots empty
+
+                {2, 2}, {3, 2}, {3, 3}, {4, 3}, {4, 3}, {5, 3}, {4, 4}, {6, 3},  //  2 -  9 matches
+                {5, 4}, {6, 4}, {6, 4}, {7, 4}, {7, 4}, {6, 5}, {8, 4}, {7, 5},  // 10 - 17 matches
+                {6, 6}, {8, 5}, {8, 5}, {7, 6}, {9, 5}, {8, 6}, {8, 6}};         // 18 - 24 matches
+
+//        if (numMatches < 2 || numMatches > 24)
+//            return new Pair<>(-1, -1);
+
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            return new Pair<>(boardSizes[numMatches-2][0], boardSizes[numMatches-2][1]);
+        else
+            return new Pair<>(boardSizes[numMatches-2][1], boardSizes[numMatches-2][0]);
+    }
 
     //
     // Listeners and runnables:
@@ -328,7 +352,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         }
     };
 
-    private final void handleMatch(Button firstCard, Button secondCard) {
+    private void handleMatch(Button firstCard, Button secondCard) {
         String first = (String) firstCard.getTag();
         String second = (String) secondCard.getTag();
         if (first.equals(second))
@@ -360,4 +384,5 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             mSecondCard = null;
         }
     };
+
 }
