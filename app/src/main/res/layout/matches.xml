@@ -21,6 +21,7 @@
         android:imeOptions="actionDone"
         android:inputType="number"
         android:maxLength="2"
+        android:selectAllOnFocus="true"
         android:textAppearance="@android:style/TextAppearance.StatusBar.Title" />
 
 </LinearLayout>

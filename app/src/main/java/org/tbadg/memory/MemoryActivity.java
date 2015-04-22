@@ -78,8 +78,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         EditText matches = (EditText) menu.findItem(R.id.menu_matches)
                                        .getActionView().findViewById(R.id.matches);
         matches.setOnEditorActionListener(this);
-        matches.setText(String.valueOf(mNumRows));
-
+        matches.setText(String.valueOf(mNumMatches));
 
         return (super.onCreateOptionsMenu(menu));
     }
@@ -107,36 +106,43 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        int matches = DEFAULT_NUM_MATCHES;
+        if (v.getId() == R.id.matches) {
+            int matches = DEFAULT_NUM_MATCHES;
 
-        boolean keyEventEnterUp = actionId == EditorInfo.IME_ACTION_UNSPECIFIED
-                && event.getAction() == KeyEvent.ACTION_UP
-                && event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
-        if (actionId == EditorInfo.IME_ACTION_DONE || keyEventEnterUp) {
-            try {
-                matches = Integer.valueOf(v.getText().toString());
-                if (matches < 2)
-                    matches = 2;
-                else if (matches > 24)
-                    matches = 24;
-                v.setText(String.valueOf(matches));
+            boolean keyEventEnterUp = actionId == EditorInfo.IME_ACTION_UNSPECIFIED
+                    && event.getAction() == KeyEvent.ACTION_UP
+                    && event.getKeyCode() == KeyEvent.KEYCODE_ENTER;
+            if (actionId == EditorInfo.IME_ACTION_DONE || keyEventEnterUp) {
+                try {
+                    matches = Integer.valueOf(v.getText().toString());
+                    if (matches < 2)
+                        matches = 2;
+                    else if (matches > 24)
+                        matches = 24;
+                    v.setText(String.valueOf(matches));
 
-            } catch (NumberFormatException e) {
-                /* Shouldn't be able to get here */
+                } catch (NumberFormatException e) {
+                    /* Shouldn't be able to get here */
+                }
+
+                InputMethodManager imm
+                        = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+
+                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+
+                mNumMatches = matches;
+                newGame();
+
+                v.clearFocus();
             }
 
-            InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-
-            if (v.getId() == R.id.matches)
-                mNumMatches = matches;
-
-            newGame();
+            return (true);
         }
 
-        return (true);
+        return false;
     }
 
     private void handleAbout() {
