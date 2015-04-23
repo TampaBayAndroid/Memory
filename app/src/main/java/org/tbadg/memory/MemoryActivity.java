@@ -15,8 +15,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import java.util.Random;
-
 
 public class MemoryActivity extends Activity implements TextView.OnEditorActionListener {
     private static final String TAG = "MemoryActivity";
@@ -40,7 +38,6 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         newGame();
     }
 
-
     //
     // Action bar and menu related methods
     //
@@ -50,7 +47,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         getMenuInflater().inflate(R.menu.options_menu, menu);
 
         EditText matches = (EditText) menu.findItem(R.id.menu_matches)
-                                       .getActionView().findViewById(R.id.matches);
+                .getActionView().findViewById(R.id.matches);
         matches.setOnEditorActionListener(this);
         matches.setText(String.valueOf(mBoard.getNumberOfMatches()));
 
