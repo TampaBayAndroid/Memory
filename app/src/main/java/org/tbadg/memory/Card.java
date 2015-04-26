@@ -34,10 +34,10 @@ public class Card extends Button {
 
     public void showFront() {
         setVisibility(View.VISIBLE);
-        setText(String.valueOf(getValue()));
+        setText(String.valueOf(mValue));
     }
 
     public boolean equals(Card other) {
-        return getValue().equals(other.getValue());
+        return mValue.equals(other.mValue);
     }
 }

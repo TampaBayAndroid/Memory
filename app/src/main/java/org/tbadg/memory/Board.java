@@ -34,6 +34,7 @@ public class Board extends LinearLayout {
 
     private final Random mRandom = new Random();
 
+
     public Board(Context context, AttributeSet attrs) {
         super(context, attrs);
         setOrientation(VERTICAL);
@@ -48,6 +49,7 @@ public class Board extends LinearLayout {
         return mNumMatches;
     }
 
+    @SuppressWarnings("ObjectAllocationInLoop")
     public void setNumberOfMatches(int numberOfMatches) {
         if (numberOfMatches == mNumMatches)
             return;
@@ -87,8 +89,6 @@ public class Board extends LinearLayout {
 
     public void reset() {
         Log.d(TAG, String.format("Starting new game for %d matches", mNumMatches));
-
-        // TODO: mPopupBtn.setVisibility(View.INVISIBLE);
 
         // Reset the game state:
         mMatchesShown = mNumMatches;
@@ -169,8 +169,7 @@ public class Board extends LinearLayout {
     // Listeners and runnables:
     //
 
-    //    @SuppressWarnings("CanBeFinal")
-    private View.OnTouchListener cardOnTouchListener = new View.OnTouchListener() {
+    private final View.OnTouchListener cardOnTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             // Return true to consume the event, false to pass it on for further handling.

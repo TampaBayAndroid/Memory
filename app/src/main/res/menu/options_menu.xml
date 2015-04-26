@@ -6,14 +6,14 @@
         android:icon="@drawable/ic_action_replay"
         android:title="@string/menu_new"
         android:orderInCategory="1"
-        android:showAsAction="always|withText" />
+        android:showAsAction="ifRoom|withText" />
 
     <item
         android:id="@+id/menu_matches"
         android:actionLayout="@layout/matches"
         android:title="@string/menu_matches"
         android:orderInCategory="2"
-        android:showAsAction="always" />
+        android:showAsAction="ifRoom" />
 
     <item
         android:id="@+id/menu_about"

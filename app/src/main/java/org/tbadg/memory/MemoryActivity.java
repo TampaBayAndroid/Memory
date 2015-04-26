@@ -147,6 +147,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         dialog.show();
     }
 
+    @SuppressWarnings("UnusedParameters")
     public void onPopupButtonClicked(View v) {
         newGame();
     }
@@ -156,7 +157,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         mPopupBtn.setVisibility(View.INVISIBLE);
     }
 
-    private Runnable mOnWinnerRunnable = new Runnable() {
+    private final Runnable mOnWinnerRunnable = new Runnable() {
         @Override
         public void run() {
             mPopupBtn.setVisibility(View.VISIBLE);
