@@ -36,6 +36,7 @@ proguard/
 .idea/dictionaries/
 .idea/encodings.xml
 .idea/gradle.xml
+.idea/inspectionProfiles/
 .idea/misc.xml
 .idea/modules.xml
 .idea/scopes/scope_settings.xml
