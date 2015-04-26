@@ -1,35 +1,28 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:descendantFocusability="beforeDescendants"
-              android:focusableInTouchMode="true"
-              android:orientation="vertical"
-              android:paddingBottom="@dimen/activity_vertical_margin"
-              android:paddingEnd="@dimen/activity_horizontal_margin"
-              android:paddingLeft="@dimen/activity_horizontal_margin"
-              android:paddingRight="@dimen/activity_horizontal_margin"
-              android:paddingStart="@dimen/activity_horizontal_margin"
-              android:paddingTop="@dimen/activity_vertical_margin"
-              tools:context=".MemoryActivity">
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             xmlns:tools="http://schemas.android.com/tools"
+             android:layout_width="match_parent"
+             android:layout_height="match_parent"
+             android:descendantFocusability="beforeDescendants"
+             android:focusableInTouchMode="true"
+             android:paddingBottom="@dimen/activity_vertical_margin"
+             android:paddingEnd="@dimen/activity_horizontal_margin"
+             android:paddingLeft="@dimen/activity_horizontal_margin"
+             android:paddingRight="@dimen/activity_horizontal_margin"
+             android:paddingStart="@dimen/activity_horizontal_margin"
+             android:paddingTop="@dimen/activity_vertical_margin"
+             tools:context=".MemoryActivity">
 
-    <FrameLayout
+    <org.tbadg.memory.Board
+        android:id="@+id/board"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="100">
+        android:layout_height="match_parent"/>
 
-        <org.tbadg.memory.Board
-            android:id="@+id/board"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"/>
-
-        <Button
-            android:id="@+id/popup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:onClick="onPopupButtonClicked"
-            android:text="@string/winner_popup"
-            android:visibility="visible"/>
-    </FrameLayout>
-</LinearLayout>
+    <Button
+        android:id="@+id/popup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:onClick="onPopupButtonClicked"
+        android:text="@string/winner_popup"
+        android:visibility="visible"/>
+</FrameLayout>
