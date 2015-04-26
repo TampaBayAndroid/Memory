@@ -65,6 +65,11 @@ public class Board extends LinearLayout {
                 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
 
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
+            setOrientation(LinearLayout.HORIZONTAL);
+        else
+            setOrientation(LinearLayout.VERTICAL);
+
         Log.d(TAG, String.format("Building a %d x %d board", mNumRows, mNumCols));
 
         // Are there too few cards to fill the board?
@@ -73,7 +78,8 @@ public class Board extends LinearLayout {
         // Create mNumRows rows of cards:
         for (int i = 0; i < mNumRows; i++) {
             LinearLayout row = new LinearLayout(getContext());
-            row.setOrientation(LinearLayout.HORIZONTAL);
+            //noinspection ResourceType
+            row.setOrientation(otherOrientation(this.getOrientation()));
             addView(row, params);
 
             // Create mNumCols cards per row:
@@ -111,8 +117,8 @@ public class Board extends LinearLayout {
             for (int j = row.getChildCount() - 1; j >= 0; --j) {
                 Card card = (Card) row.getChildAt(j);
 
-                // Hide the bottom corners or the middle space if empty spots are required:
-                if ((mEmptySpots == 2 && i == mNumRows - 1 && (j == 0 || j == mNumCols - 1))
+                // Hide two corners or the middle space if empty spots are required:
+                if ((mEmptySpots == 2 && j == mNumCols - 1 && (i == 0 || i == mNumRows - 1))
                         || (mEmptySpots == 1 && i == mNumRows / 2 && j == mNumCols / 2)) {
                     card.hide();
 
@@ -127,6 +133,34 @@ public class Board extends LinearLayout {
         }
     }
 
+    @SuppressWarnings("ResourceType")
+    public void flipOrientation() {
+        Log.d(TAG, "Flipping board");
+
+        LinearLayout board = (LinearLayout) findViewById(R.id.board);
+
+        int childCount = board.getChildCount();
+        LinearLayout rows[] = new LinearLayout[childCount];
+        for (int i = 0; i < childCount; i++)
+            rows[i] = (LinearLayout) board.getChildAt(i);
+
+        int orientation = this.getOrientation();
+        board.removeAllViews();
+        board.setOrientation(otherOrientation(orientation));
+
+        for (int i = childCount - 1; i >= 0; i--) {
+            rows[i].setOrientation(orientation);
+            board.addView(rows[i]);
+        }
+    }
+
+    private int otherOrientation(int orientation) {
+        if (orientation == LinearLayout.VERTICAL)
+            return LinearLayout.HORIZONTAL;
+        else
+            return LinearLayout.VERTICAL;
+    }
+
     private void setupDimensions() {
         // Returns a pair of dimensions for 2-24 matches. It is the caller's responsibility
         // to ensure that the input number is within the acceptable range.
@@ -137,18 +171,14 @@ public class Board extends LinearLayout {
                 // Boards for 4, 7, 17, and 22 matches will have 1 spot empty
                 // Boards for 5, 11, 13, 19, and 23 matches will have 2 spots empty
 
-                {2, 2}, {3, 2}, {3, 3}, {4, 3}, {4, 3}, {5, 3}, {4, 4}, {6, 3},  //  2 -  9 matches
-                {5, 4}, {6, 4}, {6, 4}, {7, 4}, {7, 4}, {6, 5}, {8, 4}, {7, 5},  // 10 - 17 matches
-                {6, 6}, {8, 5}, {8, 5}, {7, 6}, {9, 5}, {8, 6}, {8, 6}};         // 18 - 24 matches
+                {2, 2}, {2, 3}, {3, 3}, {3, 4}, {3, 4}, {3, 5}, {4, 4}, {3, 6},  //  2 -  9 matches
+                {4, 5}, {4, 6}, {4, 6}, {4, 7}, {4, 7}, {5, 6}, {4, 8}, {5, 7},  // 10 - 17 matches
+                {6, 6}, {5, 8}, {5, 8}, {6, 7}, {5, 9}, {6, 8}, {6, 8}};         // 18 - 24 matches
 
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            mNumRows = boardSizes[mNumMatches - 2][0];
-            mNumCols = boardSizes[mNumMatches - 2][1];
-        } else {
-            mNumRows = boardSizes[mNumMatches - 2][1];
-            mNumCols = boardSizes[mNumMatches - 2][0];
-        }
+        mNumRows = boardSizes[mNumMatches - 2][0];
+        mNumCols = boardSizes[mNumMatches - 2][1];
     }
+
 
     //
     // Game methods

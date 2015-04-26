@@ -3,6 +3,7 @@ package org.tbadg.memory;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -22,6 +23,9 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private Board mBoard;
     private Button mPopupBtn;
 
+    private int mPrevOrientation = -1;
+
+
     //
     // Life-cycle methods
     //
@@ -37,6 +41,19 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         mBoard.setOnWinnerRunnable(mOnWinnerRunnable);
         newGame();
     }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        if (newConfig.orientation == Configuration.ORIENTATION_UNDEFINED
+                || newConfig.orientation == mPrevOrientation)
+            return;
+
+        mPrevOrientation = newConfig.orientation;
+        mBoard.flipOrientation();
+    }
+
 
     //
     // Action bar and menu related methods
