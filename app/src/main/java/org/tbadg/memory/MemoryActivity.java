@@ -25,7 +25,6 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
     private int mPrevOrientation = -1;
 
-
     //
     // Life-cycle methods
     //
@@ -34,6 +33,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory);
+
+        setVolumeControlStream(SoundsEffects.AUDIO_STREAM_TYPE);
 
         // Clicking the popup or newGame buttons starts a new game:
         mPopupBtn = (Button) findViewById(R.id.popup);
