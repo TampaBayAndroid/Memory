@@ -24,6 +24,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private Button mPopupBtn;
 
     private int mPrevOrientation = -1;
+    private Ads ads = null;
 
 
     //
@@ -34,6 +35,9 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory);
+
+        ads = new Ads(findViewById(R.id.adView));
+        ads.showAd();
 
         // Clicking the popup or newGame buttons starts a new game:
         mPopupBtn = (Button) findViewById(R.id.popup);
@@ -52,6 +56,26 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
         mPrevOrientation = newConfig.orientation;
         mBoard.flipOrientation();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (ads != null)
+            ads.pause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (ads != null)
+            ads.destroy();
+    }
+
+    public void onResume() {
+        super.onResume();
+        if (ads != null)
+            ads.resume();
     }
 
 

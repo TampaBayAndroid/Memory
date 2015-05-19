@@ -13,4 +13,6 @@
 
     <string name="msg_about">Running version:\u0020</string>
     <string name="url_help">https://github.com/TampaBayAndroid/Memory</string>
+
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 </resources>
