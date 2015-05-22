@@ -20,6 +20,7 @@ public class Board extends LinearLayout {
     private static final int DEFAULT_NUM_MATCHES = 8;
     private static final int CARDS_MATCHED_TIMEOUT_IN_MILLIS = 250;
     private static final int NO_MATCH_TIMEOUT_IN_MILLIS = 1000;
+    private static final int WINNER_NOTIFICATION_DELAY_IN_MILLIS = 500;
 
     private int mNumMatches;
     private Runnable mOnWinnerRunnable;
@@ -34,9 +35,11 @@ public class Board extends LinearLayout {
 
     private final Random mRandom = new Random();
 
+    private SoundsEffects mSoundsEffects;
 
     public Board(Context context, AttributeSet attrs) {
         super(context, attrs);
+        mSoundsEffects = new SoundsEffects(context);
         setOrientation(VERTICAL);
         setNumberOfMatches(DEFAULT_NUM_MATCHES);
     }
@@ -131,6 +134,8 @@ public class Board extends LinearLayout {
                 }
             }
         }
+
+        mSoundsEffects.play(SoundsEffects.Type.START);
     }
 
     @SuppressWarnings("ResourceType")
@@ -186,15 +191,20 @@ public class Board extends LinearLayout {
 
     private void doMatch() {
         postDelayed(hideCards, CARDS_MATCHED_TIMEOUT_IN_MILLIS);
+        mSoundsEffects.play(SoundsEffects.Type.MATCH);
 
         if (--mMatchesShown <= 0 && mOnWinnerRunnable != null)
-            mOnWinnerRunnable.run();
+            doWin();
     }
 
     private void doNoMatch() {
         postDelayed(flipCards, NO_MATCH_TIMEOUT_IN_MILLIS);
+        mSoundsEffects.play(SoundsEffects.Type.NO_MATCH);
     }
 
+    private void doWin() {
+        postDelayed(showWin, WINNER_NOTIFICATION_DELAY_IN_MILLIS);
+    }
     //
     // Listeners and runnables:
     //
@@ -214,6 +224,7 @@ public class Board extends LinearLayout {
 
             Card card = (Card) v;
             card.showFront();
+            mSoundsEffects.play(SoundsEffects.Type.FLIP);
 
             if (mFirstCard == null) {
                 Log.d(TAG, "First card is " + card.getTag());
@@ -260,4 +271,11 @@ public class Board extends LinearLayout {
         }
     };
 
+    private final Runnable showWin = new Runnable() {
+        @Override
+        public void run() {
+            mOnWinnerRunnable.run();
+            mSoundsEffects.play(SoundsEffects.Type.WIN);
+        }
+    };
 }

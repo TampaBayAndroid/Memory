@@ -22,9 +22,9 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
     private Board mBoard;
     private Button mPopupBtn;
+    private Music mMusic;
 
     private int mPrevOrientation = -1;
-
 
     //
     // Life-cycle methods
@@ -35,11 +35,33 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory);
 
+        setVolumeControlStream(SoundsEffects.AUDIO_STREAM_TYPE);
+        mMusic = new Music();
+        mMusic.play(this, R.raw.music);
+
         // Clicking the popup or newGame buttons starts a new game:
         mPopupBtn = (Button) findViewById(R.id.popup);
         mBoard = (Board) findViewById(R.id.board);
         mBoard.setOnWinnerRunnable(mOnWinnerRunnable);
         newGame();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mMusic.resume();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mMusic.pause();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mMusic.stop();
     }
 
     @Override
