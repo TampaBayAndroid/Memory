@@ -25,6 +25,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private Music mMusic;
 
     private int mPrevOrientation = -1;
+    private Ads ads = null;
+
 
     //
     // Life-cycle methods
@@ -34,6 +36,9 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory);
+
+        ads = new Ads(findViewById(R.id.adView));
+        ads.showAd();
 
         setVolumeControlStream(SoundsEffects.AUDIO_STREAM_TYPE);
         mMusic = new Music();
@@ -49,12 +54,16 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     @Override
     protected void onResume() {
         super.onResume();
+        if (ads != null)
+            ads.resume();
         mMusic.resume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+        if (ads != null)
+            ads.pause();
         mMusic.pause();
     }
 
@@ -62,6 +71,13 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     protected void onStop() {
         super.onStop();
         mMusic.stop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (ads != null)
+            ads.destroy();
     }
 
     @Override
