@@ -11,7 +11,7 @@ public class Ads {
 
     public final String TAG = "Ads";
 
-    AdView adView = null;
+    AdView mAdView = null;
 
 
     //
@@ -19,8 +19,7 @@ public class Ads {
     //
 
     Ads(View adView) {
-
-        this.adView = (AdView) adView;
+        mAdView = (AdView) adView;
     }
 
     //
@@ -30,46 +29,46 @@ public class Ads {
     public void showAd() {
         Log.v(TAG, "in showAd()");
 
-        adView.setAdListener(new AdListener() {
+        mAdView.setAdListener(new AdListener() {
             @Override
-            public void onAdLoaded(){
+            public void onAdLoaded() {
                 Log.v(TAG, "in onAdLoaded()");
             }
 
-            public void onAdFailedToLoad(int errorCode){
+            public void onAdFailedToLoad(int errorCode) {
                 Log.v(TAG, "in onAdFailedToLoad()");
             }
 
-            public void onAdOpened(){
+            public void onAdOpened() {
                 Log.v(TAG, "in onAdOpened()");
             }
 
-            public void onAdClosed(){
+            public void onAdClosed() {
                 Log.v(TAG, "in onAdClosed()");
             }
 
-            public void onAdLeftApplication(){
+            public void onAdLeftApplication() {
                 Log.v(TAG, "in onAdLeftApplication()");
             }
-          });
+        });
 
         AdRequest adRequest = new AdRequest.Builder().addTestDevice("my_id_num").build();
-        adView.loadAd(adRequest);
+        mAdView.loadAd(adRequest);
     }
 
     public void pause() {
         Log.v(TAG, "in pause()");
-        adView.pause();
+        mAdView.pause();
     }
 
     public void resume() {
         Log.v(TAG, "in resume()");
-        adView.resume();
+        mAdView.resume();
     }
 
     public void destroy() {
         Log.v(TAG, "in destroy()");
-        adView.pause();
-        adView.destroy();
+        mAdView.pause();
+        mAdView.destroy();
     }
 }

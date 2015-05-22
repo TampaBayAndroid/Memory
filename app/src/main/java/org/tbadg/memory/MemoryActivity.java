@@ -25,7 +25,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private Music mMusic;
 
     private int mPrevOrientation = -1;
-    private Ads ads = null;
+    private Ads mAds = null;
 
 
     //
@@ -37,8 +37,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory);
 
-        ads = new Ads(findViewById(R.id.adView));
-        ads.showAd();
+        mAds = new Ads(findViewById(R.id.adView));
+        mAds.showAd();
 
         setVolumeControlStream(SoundsEffects.AUDIO_STREAM_TYPE);
         mMusic = new Music();
@@ -54,16 +54,16 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     @Override
     protected void onResume() {
         super.onResume();
-        if (ads != null)
-            ads.resume();
+        if (mAds != null)
+            mAds.resume();
         mMusic.resume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        if (ads != null)
-            ads.pause();
+        if (mAds != null)
+            mAds.pause();
         mMusic.pause();
     }
 
@@ -76,8 +76,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (ads != null)
-            ads.destroy();
+        if (mAds != null)
+            mAds.destroy();
     }
 
     @Override
