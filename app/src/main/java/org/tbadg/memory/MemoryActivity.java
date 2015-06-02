@@ -20,6 +20,8 @@ import android.widget.TextView;
 public class MemoryActivity extends Activity implements TextView.OnEditorActionListener {
     private static final String TAG = "MemoryActivity";
 
+    public static int MAX_MATCHES = 24;
+
     private Board mBoard;
     private Button mPopupBtn;
     private Music mMusic;
@@ -150,8 +152,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             matches = Integer.valueOf(v.getText().toString());
             if (matches < 2)
                 matches = 2;
-            else if (matches > 24)
-                matches = 24;
+            else if (matches > MAX_MATCHES)
+                matches = MAX_MATCHES;
             v.setText(String.valueOf(matches));
 
         } catch (NumberFormatException e) {
