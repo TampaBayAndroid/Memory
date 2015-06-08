@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -14,6 +15,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -24,6 +26,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
     private Board mBoard;
     private Button mPopupBtn;
+    private ImageView mSplashImg;
 
     private SoundsEffects mSoundsEffects;
     private Music mMusic;
@@ -52,9 +55,12 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
         // Clicking the popup or newGame buttons starts a new game:
         mPopupBtn = (Button) findViewById(R.id.popup);
+        mSplashImg = (ImageView) findViewById(R.id.splash);
         mBoard = (Board) findViewById(R.id.board);
         mBoard.setup(mSoundsEffects, mOnWinnerRunnable);
         newGame();
+
+        new WaitForResourcesRunnable().execute();
     }
 
     @Override
@@ -224,4 +230,37 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             mPopupBtn.setVisibility(View.VISIBLE);
         }
     };
+
+
+    class WaitForResourcesRunnable extends AsyncTask<Void, Void, Boolean> {
+        final static int DELAY_MSECS = 250;
+        final static int MIN_WAIT_MSECS = 2000;
+        final static int MAX_WAIT_MSECS = 10000;
+
+        protected Boolean doInBackground(Void... params) {
+
+            int msecs = 0;
+            while (msecs < MAX_WAIT_MSECS) {
+                if (msecs >= MIN_WAIT_MSECS
+                        && Card.isResourceLoadingFinished()
+                        && SoundsEffects.isResourceLoadingFinished()
+                        && Music.isResourceLoadingFinished())
+                    return true;
+
+                try {
+                    Thread.sleep(DELAY_MSECS);
+                } catch (InterruptedException e) {
+                    // Ignore interruption
+                }
+
+                msecs += DELAY_MSECS;
+            }
+
+            return false;
+        }
+
+        protected void onPostExecute(Boolean result) {
+            mSplashImg.setVisibility(View.INVISIBLE);
+        }
+    }
 }
