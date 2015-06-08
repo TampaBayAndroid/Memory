@@ -13,7 +13,6 @@ public class Card extends Button {
 
     public Card(Context context) {
         super(context);
-//        this.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         setup(context);
     }
 
@@ -43,14 +42,14 @@ public class Card extends Button {
 
     public void showBack() {
         setVisibility(View.VISIBLE);
-        setText("");
+//        setText("");
         setBackgroundResource(R.drawable.card_back);
     }
 
     public void showFront() {
         setVisibility(View.VISIBLE);
-        setText(String.valueOf(mValue));
-        Log.e("Card", "Resource ID = " + mValue);
+//        setText(String.valueOf(mValue));
+        Log.d("Card", "Resource ID = " + mValue);
         setBackgroundResource(images[mValue]);
     }
 

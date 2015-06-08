@@ -4,6 +4,7 @@ package org.tbadg.memory;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.SoundPool;
+import android.util.Log;
 
 import java.util.HashMap;
 

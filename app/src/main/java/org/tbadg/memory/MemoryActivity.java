@@ -114,7 +114,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         getMenuInflater().inflate(R.menu.options_menu, menu);
 
         EditText matches = (EditText) menu.findItem(R.id.menu_matches)
-                .getActionView().findViewById(R.id.matches);
+                                          .getActionView().findViewById(R.id.matches);
         matches.setOnEditorActionListener(this);
         matches.setText(String.valueOf(mBoard.getNumberOfMatches()));
 
