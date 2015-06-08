@@ -35,17 +35,17 @@ public class Board extends LinearLayout {
 
     private final Random mRandom = new Random();
 
-    private SoundsEffects mSoundsEffects;
+    private SoundsEffects mSoundsEffects = null;
 
     public Board(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mSoundsEffects = new SoundsEffects(context);
         setOrientation(VERTICAL);
-        setNumberOfMatches(DEFAULT_NUM_MATCHES);
     }
 
-    public void setOnWinnerRunnable(Runnable onWinnerRunnable) {
+    public void setup(SoundsEffects soundsEffects, Runnable onWinnerRunnable) {
+        mSoundsEffects = soundsEffects;
         mOnWinnerRunnable = onWinnerRunnable;
+        setNumberOfMatches(DEFAULT_NUM_MATCHES);
     }
 
     public int getNumberOfMatches() {

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -14,14 +15,20 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
 public class MemoryActivity extends Activity implements TextView.OnEditorActionListener {
     private static final String TAG = "MemoryActivity";
 
+    public static int MAX_MATCHES = 24;
+
     private Board mBoard;
     private Button mPopupBtn;
+    private ImageView mSplashImg;
+
+    private SoundsEffects mSoundsEffects;
     private Music mMusic;
 
     private int mPrevOrientation = -1;
@@ -41,14 +48,19 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         mAds.showAd();
 
         setVolumeControlStream(SoundsEffects.AUDIO_STREAM_TYPE);
+        mSoundsEffects = new SoundsEffects(this);
+
         mMusic = new Music();
         mMusic.play(this, R.raw.music);
 
         // Clicking the popup or newGame buttons starts a new game:
         mPopupBtn = (Button) findViewById(R.id.popup);
+        mSplashImg = (ImageView) findViewById(R.id.splash);
         mBoard = (Board) findViewById(R.id.board);
-        mBoard.setOnWinnerRunnable(mOnWinnerRunnable);
+        mBoard.setup(mSoundsEffects, mOnWinnerRunnable);
         newGame();
+
+        new WaitForResourcesRunnable().execute();
     }
 
     @Override
@@ -102,7 +114,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         getMenuInflater().inflate(R.menu.options_menu, menu);
 
         EditText matches = (EditText) menu.findItem(R.id.menu_matches)
-                .getActionView().findViewById(R.id.matches);
+                                          .getActionView().findViewById(R.id.matches);
         matches.setOnEditorActionListener(this);
         matches.setText(String.valueOf(mBoard.getNumberOfMatches()));
 
@@ -150,8 +162,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             matches = Integer.valueOf(v.getText().toString());
             if (matches < 2)
                 matches = 2;
-            else if (matches > 24)
-                matches = 24;
+            else if (matches > MAX_MATCHES)
+                matches = MAX_MATCHES;
             v.setText(String.valueOf(matches));
 
         } catch (NumberFormatException e) {
@@ -218,4 +230,37 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             mPopupBtn.setVisibility(View.VISIBLE);
         }
     };
+
+
+    class WaitForResourcesRunnable extends AsyncTask<Void, Void, Boolean> {
+        final static int DELAY_MSECS = 250;
+        final static int MIN_WAIT_MSECS = 2000;
+        final static int MAX_WAIT_MSECS = 10000;
+
+        protected Boolean doInBackground(Void... params) {
+
+            int msecs = 0;
+            while (msecs < MAX_WAIT_MSECS) {
+                if (msecs >= MIN_WAIT_MSECS
+                        && Card.isResourceLoadingFinished()
+                        && SoundsEffects.isResourceLoadingFinished()
+                        && Music.isResourceLoadingFinished())
+                    return true;
+
+                try {
+                    Thread.sleep(DELAY_MSECS);
+                } catch (InterruptedException e) {
+                    // Ignore interruption
+                }
+
+                msecs += DELAY_MSECS;
+            }
+
+            return false;
+        }
+
+        protected void onPostExecute(Boolean result) {
+            mSplashImg.setVisibility(View.INVISIBLE);
+        }
+    }
 }
