@@ -24,6 +24,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
     private Board mBoard;
     private Button mPopupBtn;
+
+    private SoundsEffects mSoundsEffects;
     private Music mMusic;
 
     private int mPrevOrientation = -1;
@@ -43,13 +45,15 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         mAds.showAd();
 
         setVolumeControlStream(SoundsEffects.AUDIO_STREAM_TYPE);
+        mSoundsEffects = new SoundsEffects(this);
+
         mMusic = new Music();
         mMusic.play(this, R.raw.music);
 
         // Clicking the popup or newGame buttons starts a new game:
         mPopupBtn = (Button) findViewById(R.id.popup);
         mBoard = (Board) findViewById(R.id.board);
-        mBoard.setOnWinnerRunnable(mOnWinnerRunnable);
+        mBoard.setup(mSoundsEffects, mOnWinnerRunnable);
         newGame();
     }
 
