@@ -48,6 +48,9 @@ public class SoundsEffects {
         mSoundPool.stop(soundIdForType(type));
     }
 
+    public static boolean isResourceLoadingFinished() {
+        return resourceLoadingFinished;
+    }
 
     /**
      * ********** Implementation below ************
@@ -70,6 +73,9 @@ public class SoundsEffects {
     private HashMap<Type, Integer> mTypeToSoundIdMap = new HashMap<>();
     private HashMap<Integer, Boolean> mTypeIsLoadedMap = new HashMap<>();
 
+    private int soundsLoaded = 0;
+    private static boolean resourceLoadingFinished = false;
+
     private final Context mContext;
 
     private void setup() {
@@ -88,6 +94,12 @@ public class SoundsEffects {
                 final int SUCCESS = 0;
                 if (status == SUCCESS)
                     mTypeIsLoadedMap.put(soundId, true);
+
+                if (++soundsLoaded >= Type.values().length)
+                    resourceLoadingFinished = true;
+
+                Log.d("SE", String.format("soundsLoaded=%d, values=%s, Type.values().length= %d, resourceLoadingFinished=%b",
+                                          soundsLoaded, Type.values(), Type.values().length, resourceLoadingFinished));
             }
         });
 

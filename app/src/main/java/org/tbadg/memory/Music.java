@@ -58,11 +58,17 @@ public class Music {
         reset();
     }
 
+    public static boolean isResourceLoadingFinished() {
+        return resourceLoadingFinished;
+    }
+
     /*
      * Implementation below
      */
 
     private MediaPlayer mMediaPlayer;
+    private static boolean resourceLoadingFinished = true;
+
 
     private void reset() {
         if (mMediaPlayer != null)

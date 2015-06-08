@@ -9,6 +9,7 @@ public class Card extends Button {
 
     private Integer mValue;
     private int images[] = new int[MemoryActivity.MAX_MATCHES];
+    private static boolean resourceLoadingFinished = false;
 
     public Card(Context context) {
         super(context);
@@ -21,6 +22,7 @@ public class Card extends Button {
             images[x] = getResources().getIdentifier("@drawable/card_" + String.valueOf(x), null,
                                                      context.getPackageName());
         }
+        resourceLoadingFinished = true;
     }
 
 
@@ -54,5 +56,9 @@ public class Card extends Button {
 
     public boolean equals(Card other) {
         return mValue.equals(other.mValue);
+    }
+
+    static public boolean isResourceLoadingFinished() {
+        return resourceLoadingFinished;
     }
 }
