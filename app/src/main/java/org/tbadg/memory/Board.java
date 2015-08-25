@@ -223,7 +223,7 @@ public class Board extends LinearLayout {
                 return true;
 
             Card card = (Card) v;
-            card.showFront();
+            card.flipToFront();
             mSoundsEffects.play(SoundsEffects.Type.FLIP);
 
             if (mFirstCard == null) {
@@ -263,8 +263,8 @@ public class Board extends LinearLayout {
         @Override
         public void run() {
             // Flip selected cards
-            mFirstCard.showBack();
-            mSecondCard.showBack();
+            mFirstCard.flipToBack();
+            mSecondCard.flipToBack();
 
             mFirstCard = null;
             mSecondCard = null;

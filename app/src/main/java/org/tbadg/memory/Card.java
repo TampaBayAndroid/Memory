@@ -3,13 +3,22 @@ package org.tbadg.memory;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 
 public class Card extends Button {
 
+    final public String TAG = "Card";
+
     private Integer mValue;
     private int images[] = new int[MemoryActivity.MAX_MATCHES];
     private static boolean resourceLoadingFinished = false;
+
+    private Animation mStartFlip;
+    private Animation mFinishFlip;
+    private int mNextImage;
+
 
     public Card(Context context) {
         super(context);
@@ -21,6 +30,12 @@ public class Card extends Button {
             images[x] = getResources().getIdentifier("@drawable/card_" + String.valueOf(x), null,
                                                      context.getPackageName());
         }
+
+        mStartFlip = AnimationUtils.loadAnimation(getContext(), R.anim.flip_out);
+        mStartFlip.setAnimationListener(mAnimationListener);
+        mFinishFlip = AnimationUtils.loadAnimation(getContext(), R.anim.flip_in);
+        mFinishFlip.setAnimationListener(mAnimationListener);
+
         resourceLoadingFinished = true;
     }
 
@@ -49,7 +64,7 @@ public class Card extends Button {
     public void showFront() {
         setVisibility(View.VISIBLE);
 //        setText(String.valueOf(mValue));
-        Log.d("Card", "Resource ID = " + mValue);
+        Log.d(TAG, "Resource ID = " + mValue);
         setBackgroundResource(images[mValue]);
     }
 
@@ -60,4 +75,47 @@ public class Card extends Button {
     static public boolean isResourceLoadingFinished() {
         return resourceLoadingFinished;
     }
+
+    public void flipToBack() {
+        Log.d(TAG, String.format("Flipping card %d to back", mValue));
+        flipCard(R.drawable.card_back);
+    }
+
+    public void flipToFront() {
+        Log.d(TAG, String.format("Flipping card %d to front", mValue));
+        flipCard(images[mValue]);
+    }
+
+    private void flipCard(int image) {
+        mNextImage = image;
+
+        clearAnimation();
+        setAnimation(mStartFlip);
+        startAnimation(mStartFlip);
+    }
+
+    private Animation.AnimationListener mAnimationListener = new Animation.AnimationListener() {
+        @Override
+        public void onAnimationEnd(Animation animation) {
+            Log.e(TAG, "in onAnimationEnd()");
+
+            if (animation == mStartFlip) {
+                Log.e(TAG, "start of flip finished");
+
+                Card.this.setBackgroundResource(mNextImage);
+                Card.this.clearAnimation();
+                Card.this.setAnimation(mFinishFlip);
+                Card.this.startAnimation(mFinishFlip);
+
+            } else {
+                Log.e(TAG, "end of flip finished");
+            }
+        }
+
+        @Override
+        public void onAnimationStart(Animation animation) { }
+
+        @Override
+        public void onAnimationRepeat(Animation animation) { }
+    };
 }
