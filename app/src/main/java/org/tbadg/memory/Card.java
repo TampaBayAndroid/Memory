@@ -97,18 +97,13 @@ public class Card extends Button {
     private Animation.AnimationListener mAnimationListener = new Animation.AnimationListener() {
         @Override
         public void onAnimationEnd(Animation animation) {
-            Log.e(TAG, "in onAnimationEnd()");
-
             if (animation == mStartFlip) {
-                Log.e(TAG, "start of flip finished");
+                Log.v(TAG, "start of flip finished");
 
                 Card.this.setBackgroundResource(mNextImage);
                 Card.this.clearAnimation();
                 Card.this.setAnimation(mFinishFlip);
                 Card.this.startAnimation(mFinishFlip);
-
-            } else {
-                Log.e(TAG, "end of flip finished");
             }
         }
 
