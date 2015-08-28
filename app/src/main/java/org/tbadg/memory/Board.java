@@ -1,5 +1,6 @@
 package org.tbadg.memory;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.AttributeSet;
@@ -17,7 +18,7 @@ public class Board extends LinearLayout {
 
     private static final String TAG = "Board";
 
-    private static final int DEFAULT_NUM_MATCHES = 8;
+    private static final int DEFAULT_NUM_MATCHES = 2;
     private static final int CARDS_MATCHED_TIMEOUT_IN_MILLIS = 250;
     private static final int NO_MATCH_TIMEOUT_IN_MILLIS = 1000;
     private static final int WINNER_NOTIFICATION_DELAY_IN_MILLIS = 500;
@@ -33,19 +34,22 @@ public class Board extends LinearLayout {
     private Card mFirstCard;
     private Card mSecondCard;
 
-    private final Random mRandom = new Random();
+    private int mGuessesMade;
+//    private int mMatchesMade;
+    private long mStartTime;
 
-    private SoundsEffects mSoundsEffects;
+    private final Random mRandom = new Random();
+    private SoundsEffects mSoundsEffects = null;
 
     public Board(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mSoundsEffects = new SoundsEffects(context);
         setOrientation(VERTICAL);
-        setNumberOfMatches(DEFAULT_NUM_MATCHES);
     }
 
-    public void setOnWinnerRunnable(Runnable onWinnerRunnable) {
+    public void setup(SoundsEffects soundsEffects, Runnable onWinnerRunnable) {
+        mSoundsEffects = soundsEffects;
         mOnWinnerRunnable = onWinnerRunnable;
+        setNumberOfMatches(DEFAULT_NUM_MATCHES);
     }
 
     public int getNumberOfMatches() {
@@ -103,6 +107,8 @@ public class Board extends LinearLayout {
         mMatchesShown = mNumMatches;
         mFirstCard = null;
         mSecondCard = null;
+        mGuessesMade = 0;
+//        mMatchesMade = 0;
 
         // Create a list with two copies of each possible card value. We'll randomly
         //  select and remove these values later to give them to the cards.
@@ -159,6 +165,17 @@ public class Board extends LinearLayout {
         }
     }
 
+        public ContentValues getResult() {
+        ContentValues cv = new ContentValues();
+
+        cv.put(DatabaseHelper.SCORE, mGuessesMade);
+        cv.put(DatabaseHelper.MATCHES, mNumMatches);
+        cv.put(DatabaseHelper.GUESSES, mGuessesMade);
+        cv.put(DatabaseHelper.ELAPSED_TIME, (System.currentTimeMillis() - mStartTime + 500) / 1000);
+
+        return cv;
+    }
+
     private int otherOrientation(int orientation) {
         if (orientation == LinearLayout.VERTICAL)
             return LinearLayout.HORIZONTAL;
@@ -190,6 +207,7 @@ public class Board extends LinearLayout {
     //
 
     private void doMatch() {
+//        mMatchesMade++;
         postDelayed(hideCards, CARDS_MATCHED_TIMEOUT_IN_MILLIS);
         mSoundsEffects.play(SoundsEffects.Type.MATCH);
 
@@ -223,12 +241,16 @@ public class Board extends LinearLayout {
                 return true;
 
             Card card = (Card) v;
-            card.showFront();
+            card.flipToFront();
             mSoundsEffects.play(SoundsEffects.Type.FLIP);
 
             if (mFirstCard == null) {
                 Log.d(TAG, "First card is " + card.getTag());
                 mFirstCard = card;
+
+                if (mGuessesMade == 0)
+                    mStartTime = System.currentTimeMillis();
+
                 return true;
             }
 
@@ -241,6 +263,8 @@ public class Board extends LinearLayout {
     };
 
     private void handleMatch(Card firstCard, Card secondCard) {
+        mGuessesMade++;
+
         if (firstCard.equals(secondCard))
             doMatch();
         else
@@ -263,8 +287,8 @@ public class Board extends LinearLayout {
         @Override
         public void run() {
             // Flip selected cards
-            mFirstCard.showBack();
-            mSecondCard.showBack();
+            mFirstCard.flipToBack();
+            mSecondCard.flipToBack();
 
             mFirstCard = null;
             mSecondCard = null;

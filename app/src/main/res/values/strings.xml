@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Memory</string>
 
-    <string name="winner_popup">Winner!</string>
+    <string name="winner_popup">Winner!\nScore:\u0020</string>
 
     <string name="menu_new">New Game</string>
     <string name="menu_matches">Matches:</string>

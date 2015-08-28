@@ -2,9 +2,12 @@ package org.tbadg.memory;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -14,19 +17,26 @@ import android.view.inputmethod.InputMethodManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
 public class MemoryActivity extends Activity implements TextView.OnEditorActionListener {
+    @SuppressWarnings("unused")
     private static final String TAG = "MemoryActivity";
+    public static final int MAX_MATCHES = 24;
 
     private Board mBoard;
     private Button mPopupBtn;
+    private ImageView mSplashImg;
+
+    @SuppressWarnings("FieldCanBeLocal")
+    private SoundsEffects mSoundsEffects;
     private Music mMusic;
 
     private int mPrevOrientation = -1;
     private Ads mAds = null;
-
+    private DatabaseHelper mDb = null;
 
     //
     // Life-cycle methods
@@ -37,18 +47,25 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory);
 
+        mDb = new DatabaseHelper(this);
+
         mAds = new Ads(findViewById(R.id.adView));
         mAds.showAd();
 
         setVolumeControlStream(SoundsEffects.AUDIO_STREAM_TYPE);
+        mSoundsEffects = new SoundsEffects(this);
+
         mMusic = new Music();
         mMusic.play(this, R.raw.music);
 
         // Clicking the popup or newGame buttons starts a new game:
         mPopupBtn = (Button) findViewById(R.id.popup);
+        mSplashImg = (ImageView) findViewById(R.id.splash);
         mBoard = (Board) findViewById(R.id.board);
-        mBoard.setOnWinnerRunnable(mOnWinnerRunnable);
+        mBoard.setup(mSoundsEffects, mOnWinnerRunnable);
         newGame();
+
+        new WaitForResourcesRunnable().execute();
     }
 
     @Override
@@ -76,6 +93,9 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        mDb.close();
+
         if (mAds != null)
             mAds.destroy();
     }
@@ -102,7 +122,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         getMenuInflater().inflate(R.menu.options_menu, menu);
 
         EditText matches = (EditText) menu.findItem(R.id.menu_matches)
-                .getActionView().findViewById(R.id.matches);
+                                          .getActionView().findViewById(R.id.matches);
         matches.setOnEditorActionListener(this);
         matches.setText(String.valueOf(mBoard.getNumberOfMatches()));
 
@@ -150,8 +170,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
             matches = Integer.valueOf(v.getText().toString());
             if (matches < 2)
                 matches = 2;
-            else if (matches > 24)
-                matches = 24;
+            else if (matches > MAX_MATCHES)
+                matches = MAX_MATCHES;
             v.setText(String.valueOf(matches));
 
         } catch (NumberFormatException e) {
@@ -215,7 +235,57 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private final Runnable mOnWinnerRunnable = new Runnable() {
         @Override
         public void run() {
+            ContentValues cv = mBoard.getResult();
+            mPopupBtn.setText(getString(R.string.winner_popup)
+                    + cv.get(DatabaseHelper.SCORE));
             mPopupBtn.setVisibility(View.VISIBLE);
+
+            new InsertTask().execute(cv);
         }
     };
+
+    class InsertTask extends AsyncTask<ContentValues, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(ContentValues... cv) {
+            mDb.getWritableDatabase().insert(DatabaseHelper.TABLE,
+                    DatabaseHelper.SCORE, cv[0]);
+
+            Log.e(TAG, "Insert into datbase.");
+            return true;
+        }
+    }
+
+
+    class WaitForResourcesRunnable extends AsyncTask<Void, Void, Boolean> {
+        final static int DELAY_MSECS = 250;
+        final static int MIN_WAIT_MSECS = 2000;
+        final static int MAX_WAIT_MSECS = 10000;
+
+        protected Boolean doInBackground(Void... params) {
+
+            int msecs = 0;
+            while (msecs < MAX_WAIT_MSECS) {
+                //noinspection ResourceType
+                if (msecs >= MIN_WAIT_MSECS
+                        && Card.isResourceLoadingFinished()
+                        && SoundsEffects.isResourceLoadingFinished()
+                        && Music.isResourceLoadingFinished())
+                    return true;
+
+                try {
+                    Thread.sleep(DELAY_MSECS);
+                } catch (InterruptedException e) {
+                    // Ignore interruption
+                }
+
+                msecs += DELAY_MSECS;
+            }
+
+            return false;
+        }
+
+        protected void onPostExecute(Boolean result) {
+            mSplashImg.setVisibility(View.INVISIBLE);
+        }
+    }
 }

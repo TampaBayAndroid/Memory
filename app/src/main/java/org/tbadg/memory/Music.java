@@ -24,7 +24,7 @@ public class Music {
 
         MediaPlayer mediaPlayer = new MediaPlayer();
         try {
-            final float volumeLevel = currentVolumeLevel(context);
+            final float volumeLevel = currentVolumeLevel(context) * 0.15f;
             mediaPlayer.setVolume(volumeLevel, volumeLevel);
             mediaPlayer.setOnPreparedListener(mOnPreparedListener);
             mediaPlayer.setOnErrorListener(mOnErrorListener);
@@ -58,11 +58,17 @@ public class Music {
         reset();
     }
 
+    public static boolean isResourceLoadingFinished() {
+        return resourceLoadingFinished;
+    }
+
     /*
      * Implementation below
      */
 
     private MediaPlayer mMediaPlayer;
+    private static boolean resourceLoadingFinished = true;
+
 
     private void reset() {
         if (mMediaPlayer != null)
