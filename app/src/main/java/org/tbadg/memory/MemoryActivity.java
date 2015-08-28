@@ -2,10 +2,12 @@ package org.tbadg.memory;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,20 +22,21 @@ import android.widget.TextView;
 
 
 public class MemoryActivity extends Activity implements TextView.OnEditorActionListener {
+    @SuppressWarnings("unused")
     private static final String TAG = "MemoryActivity";
-
-    public static int MAX_MATCHES = 24;
+    public static final int MAX_MATCHES = 24;
 
     private Board mBoard;
     private Button mPopupBtn;
     private ImageView mSplashImg;
 
+    @SuppressWarnings("FieldCanBeLocal")
     private SoundsEffects mSoundsEffects;
     private Music mMusic;
 
     private int mPrevOrientation = -1;
     private Ads mAds = null;
-
+    private DatabaseHelper mDb = null;
 
     //
     // Life-cycle methods
@@ -43,6 +46,8 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_memory);
+
+        mDb = new DatabaseHelper(this);
 
         mAds = new Ads(findViewById(R.id.adView));
         mAds.showAd();
@@ -88,6 +93,9 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        mDb.close();
+
         if (mAds != null)
             mAds.destroy();
     }
@@ -227,9 +235,25 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private final Runnable mOnWinnerRunnable = new Runnable() {
         @Override
         public void run() {
+            ContentValues cv = mBoard.getResult();
+            mPopupBtn.setText(getString(R.string.winner_popup)
+                    + cv.get(DatabaseHelper.SCORE));
             mPopupBtn.setVisibility(View.VISIBLE);
+
+            new InsertTask().execute(cv);
         }
     };
+
+    class InsertTask extends AsyncTask<ContentValues, Void, Boolean> {
+        @Override
+        protected Boolean doInBackground(ContentValues... cv) {
+            mDb.getWritableDatabase().insert(DatabaseHelper.TABLE,
+                    DatabaseHelper.SCORE, cv[0]);
+
+            Log.e(TAG, "Insert into datbase.");
+            return true;
+        }
+    }
 
 
     class WaitForResourcesRunnable extends AsyncTask<Void, Void, Boolean> {
@@ -241,6 +265,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
 
             int msecs = 0;
             while (msecs < MAX_WAIT_MSECS) {
+                //noinspection ResourceType
                 if (msecs >= MIN_WAIT_MSECS
                         && Card.isResourceLoadingFinished()
                         && SoundsEffects.isResourceLoadingFinished()
