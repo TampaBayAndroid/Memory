@@ -26,6 +26,12 @@
         <include layout="@layout/ad"/>
     </LinearLayout>
 
+    <ImageView
+        android:id="@+id/splash"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/splash"/>
+
     <Button
         android:id="@+id/popup"
         android:layout_width="wrap_content"
@@ -34,10 +40,4 @@
         android:onClick="onPopupButtonClicked"
         android:text="@string/winner_popup"
         android:visibility="visible"/>
-
-    <ImageView
-        android:id="@+id/splash"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/splash"/>
 </FrameLayout>
