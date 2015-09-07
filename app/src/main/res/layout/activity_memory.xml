@@ -40,4 +40,5 @@
         android:onClick="onPopupButtonClicked"
         android:text="@string/winner_popup"
         android:visibility="visible"/>
+
 </FrameLayout>

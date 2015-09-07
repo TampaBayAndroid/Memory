@@ -5,10 +5,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
-    private static final String DATABASE_NAME="scores.db";
-    private static final int SCHEMA=1;
+    private static final String DATABASE_NAME = "scores.db";
+    private static final int SCHEMA = 1;
 
-    static public final String TABLE="scores";
+    static public final String TABLE = "scores";
     static public final String SCORE = "score";
     static public final String MATCHES = "matches";
     static public final String GUESSES = "guesses";

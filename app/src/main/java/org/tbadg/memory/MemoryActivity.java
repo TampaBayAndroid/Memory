@@ -38,6 +38,7 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
     private Ads mAds = null;
     private DatabaseHelper mDb = null;
 
+    private ScoresFragment mScores = null;
     //
     // Life-cycle methods
     //
@@ -140,6 +141,10 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
                 newGame();
                 break;
 
+            case R.id.menu_scores:
+                handleScores();
+                break;
+
             case R.id.menu_about:
                 handleAbout();
                 break;
@@ -191,6 +196,25 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
         return true;
     }
 
+    private void handleScores() {
+
+        Log.e(TAG, "Showing best scores.");
+
+            mScores = new ScoresFragment();
+            if (getFragmentManager().findFragmentById(android.R.id.content) == null) {
+                getFragmentManager().beginTransaction().add(android.R.id.content,mScores).commit();
+            } else {
+                getFragmentManager().beginTransaction().replace(android.R.id.content,mScores).commit();
+            }
+    }
+
+    public void dismissScores(View vw) {
+
+        if (getFragmentManager().findFragmentById(android.R.id.content) != null) {
+            getFragmentManager().beginTransaction().remove(mScores).commit();
+        }
+    }
+
     private void handleAbout() {
 
         String version = null;
@@ -206,6 +230,9 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
                 .setTitle(getString(R.string.title_about))
                 .setMessage(getString(R.string.msg_about) + version)
                 .setIcon(R.drawable.ic_action_about);
+
+        AlertDialog options = dialog.create();
+        options.setCanceledOnTouchOutside(true);
 
         dialog.show();
     }
@@ -240,17 +267,17 @@ public class MemoryActivity extends Activity implements TextView.OnEditorActionL
                     + cv.get(DatabaseHelper.SCORE));
             mPopupBtn.setVisibility(View.VISIBLE);
 
-            new InsertTask().execute(cv);
+            new InsertScoreTask().execute(cv);
         }
     };
 
-    class InsertTask extends AsyncTask<ContentValues, Void, Boolean> {
+    class InsertScoreTask extends AsyncTask<ContentValues, Void, Boolean> {
         @Override
         protected Boolean doInBackground(ContentValues... cv) {
             mDb.getWritableDatabase().insert(DatabaseHelper.TABLE,
                     DatabaseHelper.SCORE, cv[0]);
 
-            Log.e(TAG, "Insert into datbase.");
+            Log.e(TAG, "Inserted score row into datbase.");
             return true;
         }
     }
