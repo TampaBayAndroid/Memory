@@ -18,7 +18,7 @@ public class Board extends LinearLayout {
 
     private static final String TAG = "Board";
 
-    private static final int DEFAULT_NUM_MATCHES = 2;
+    private static final int DEFAULT_NUM_MATCHES = 8;
     private static final int CARDS_MATCHED_TIMEOUT_IN_MILLIS = 250;
     private static final int NO_MATCH_TIMEOUT_IN_MILLIS = 1000;
     private static final int WINNER_NOTIFICATION_DELAY_IN_MILLIS = 500;

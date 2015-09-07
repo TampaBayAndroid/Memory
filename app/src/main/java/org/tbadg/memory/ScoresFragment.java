@@ -61,7 +61,7 @@ public class ScoresFragment extends ListFragment {
 
             TextView timeVw = (TextView) view.findViewById(R.id.time);
             int time = Integer.valueOf(timeVw.getText().toString());
-            timeVw.setText(String.format("%01d:%02d", time / 60, time % 60));
+            timeVw.setText(String.format("%02d:%02d", time / 60, time % 60));
 
             return view;
         }
