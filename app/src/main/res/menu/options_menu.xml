@@ -16,15 +16,21 @@
         android:showAsAction="ifRoom|withText" />
 
     <item
+        android:id="@+id/menu_scores"
+        android:title="@string/menu_score"
+        android:orderInCategory="11"
+        android:showAsAction="ifRoom|withText" />
+
+    <item
         android:id="@+id/menu_about"
         android:title="@string/menu_about"
-        android:orderInCategory="11"
+        android:orderInCategory="18"
         android:showAsAction="never" />
 
     <item
         android:id="@+id/menu_help"
         android:title="@string/menu_help"
-        android:orderInCategory="12"
+        android:orderInCategory="19"
         android:showAsAction="never" />
 
 </menu>
