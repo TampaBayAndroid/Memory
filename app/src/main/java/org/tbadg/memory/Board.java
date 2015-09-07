@@ -168,7 +168,8 @@ public class Board extends LinearLayout {
         public ContentValues getResult() {
         ContentValues cv = new ContentValues();
 
-        cv.put(DatabaseHelper.SCORE, mGuessesMade);
+        cv.put(DatabaseHelper.SCORE,
+               mGuessesMade > 0 ? (int) (150.0 * mNumMatches / mGuessesMade + 0.5) : 0);
         cv.put(DatabaseHelper.MATCHES, mNumMatches);
         cv.put(DatabaseHelper.GUESSES, mGuessesMade);
         cv.put(DatabaseHelper.ELAPSED_TIME, (System.currentTimeMillis() - mStartTime + 500) / 1000);
