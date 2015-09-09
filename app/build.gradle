@@ -18,7 +18,7 @@ dependencies {
 }
 
 def major = 1
-def minor = 3
+def minor = 4
 def rev = "git rev-list master --first-parent --count".execute().text.toInteger()
 def verName = "${major}.${minor}.${rev}"
 

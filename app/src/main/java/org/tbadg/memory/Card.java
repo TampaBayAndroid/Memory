@@ -1,10 +1,14 @@
 package org.tbadg.memory;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
+import android.animation.TypeEvaluator;
+import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 
 public class Card extends Button {
@@ -15,9 +19,11 @@ public class Card extends Button {
     private int images[] = new int[MemoryActivity.MAX_MATCHES];
     private static boolean resourceLoadingFinished = false;
 
-    private Animation mStartFlip;
-    private Animation mFinishFlip;
-    private int mNextImage;
+    ValueAnimator start = null;
+    ValueAnimator finish = null;
+    ValueAnimator swap = null;
+
+    private int mCurrentImage;
 
 
     public Card(Context context) {
@@ -31,10 +37,18 @@ public class Card extends Button {
                                                      context.getPackageName());
         }
 
-        mStartFlip = AnimationUtils.loadAnimation(getContext(), R.anim.flip_out);
-        mStartFlip.setAnimationListener(mAnimationListener);
-        mFinishFlip = AnimationUtils.loadAnimation(getContext(), R.anim.flip_in);
-        mFinishFlip.setAnimationListener(mAnimationListener);
+        // Create the animator used to start the card flipping. At the end of this, the card has
+        //   been rotated halfway, showing it's edge, making the current card image disappear:
+        start = ObjectAnimator.ofFloat(this, "rotationY", 0, 90); // --> setRotationY
+        start.setDuration(500);
+        start.setInterpolator(new AccelerateInterpolator());
+
+        // Create the animator used to finish the card flipping. At the start, the card edge appears
+        //   to be facing the user. Then the new card image is rotated into view until it is fully
+        //   displayed.
+        finish = ObjectAnimator.ofFloat(this, "rotationY", -90, 0);
+        finish.setDuration(500);
+        finish.setInterpolator(new DecelerateInterpolator());
 
         resourceLoadingFinished = true;
     }
@@ -87,30 +101,26 @@ public class Card extends Button {
     }
 
     private void flipCard(int image) {
-        mNextImage = image;
+        // Create a regressive "animator" that merely swaps the front-back card images:
+        swap = ObjectAnimator.ofObject(this, "backgroundResource",
+                                       new ResourceIdEvaluator(), mCurrentImage, image);
 
-        clearAnimation();
-        setAnimation(mStartFlip);
-        startAnimation(mStartFlip);
+        // Duration 0 seems to work fine to get a single frame, but might need to be a '1':
+        swap.setDuration(0);
+        mCurrentImage = image;
+
+        // Create and start an Animator set with the sequence: start, swap, finish:
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.play(start).before(swap);
+        animatorSet.play(finish).after(swap);
+        animatorSet.start();
     }
 
-    private Animation.AnimationListener mAnimationListener = new Animation.AnimationListener() {
+    public class ResourceIdEvaluator implements TypeEvaluator<Integer> {
         @Override
-        public void onAnimationEnd(Animation animation) {
-            if (animation == mStartFlip) {
-                Log.v(TAG, "start of flip finished");
-
-                Card.this.setBackgroundResource(mNextImage);
-                Card.this.clearAnimation();
-                Card.this.setAnimation(mFinishFlip);
-                Card.this.startAnimation(mFinishFlip);
-            }
+        public Integer evaluate(float fraction, Integer startValue, Integer endValue) {
+            // Always return the end value since we only expect to be run once:
+            return endValue;
         }
-
-        @Override
-        public void onAnimationStart(Animation animation) { }
-
-        @Override
-        public void onAnimationRepeat(Animation animation) { }
-    };
+    }
 }
