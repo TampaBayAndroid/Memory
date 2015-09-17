@@ -11,18 +11,23 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.Button;
 
-public class Card extends Button {
 
-    final public String TAG = "Card";
+public class Card extends Button {
+    public static final int CARD_FLIP_MSECS = 750;
+
+    private static final String TAG = "Card";
+    private static final int CARD_FLIP_DEGREES = 180;
+    private static final int HALF_CARD_FLIP_DEGREES = CARD_FLIP_DEGREES / 2;
+    private static final int HALF_CARD_FLIP_MSECS = CARD_FLIP_MSECS / 2;
 
     private Integer mValue;
-    private int images[] = new int[MemoryActivity.MAX_MATCHES];
+    private int mImages[] = new int[MemoryActivity.MAX_MATCHES];
     private static boolean resourceLoadingFinished = false;
 
-    ValueAnimator start = null;
-    ValueAnimator finish = null;
-    ValueAnimator swap = null;
-
+    // Animators used for flipping a card:
+    ValueAnimator mStartFlip = null;
+    ValueAnimator mFfinishFlip = null;
+    ValueAnimator mSwapCardImages = null;
     private int mCurrentImage;
 
 
@@ -32,23 +37,23 @@ public class Card extends Button {
     }
 
     public void setup(Context context) {
-        for (int x = 0; x < images.length; x++) {
-            images[x] = getResources().getIdentifier("@drawable/card_" + String.valueOf(x), null,
-                                                     context.getPackageName());
+        for (int x = 0; x < mImages.length; x++) {
+            mImages[x] = getResources().getIdentifier("@drawable/card_" + String.valueOf(x), null,
+                                                      context.getPackageName());
         }
 
-        // Create the animator used to start the card flipping. At the end of this, the card has
+        // Create animator used to start flipping a card. At the end of this, the card has
         //   been rotated halfway, showing it's edge, making the current card image disappear:
-        start = ObjectAnimator.ofFloat(this, "rotationY", 0, 90); // --> setRotationY
-        start.setDuration(500);
-        start.setInterpolator(new AccelerateInterpolator());
+        mStartFlip = ObjectAnimator.ofFloat(this, "rotationY", 0, HALF_CARD_FLIP_DEGREES);
+        mStartFlip.setDuration(HALF_CARD_FLIP_MSECS);
+        mStartFlip.setInterpolator(new AccelerateInterpolator());
 
-        // Create the animator used to finish the card flipping. At the start, the card edge appears
+        // Create animator used to finish flipping a card. At the start, the card edge appears
         //   to be facing the user. Then the new card image is rotated into view until it is fully
         //   displayed.
-        finish = ObjectAnimator.ofFloat(this, "rotationY", -90, 0);
-        finish.setDuration(500);
-        finish.setInterpolator(new DecelerateInterpolator());
+        mFfinishFlip = ObjectAnimator.ofFloat(this, "rotationY", -HALF_CARD_FLIP_DEGREES, 0);
+        mFfinishFlip.setDuration(HALF_CARD_FLIP_MSECS);
+        mFfinishFlip.setInterpolator(new DecelerateInterpolator());
 
         resourceLoadingFinished = true;
     }
@@ -79,7 +84,7 @@ public class Card extends Button {
         setVisibility(View.VISIBLE);
 //        setText(String.valueOf(mValue));
         Log.d(TAG, "Resource ID = " + mValue);
-        setBackgroundResource(images[mValue]);
+        setBackgroundResource(mImages[mValue]);
     }
 
     public boolean equals(Card other) {
@@ -97,23 +102,23 @@ public class Card extends Button {
 
     public void flipToFront() {
         Log.d(TAG, String.format("Flipping card %d to front", mValue));
-        flipCard(images[mValue]);
+        flipCard(mImages[mValue]);
     }
 
     private void flipCard(int image) {
-        // Create a regressive "animator" that merely swaps the front-back card images:
-        swap = ObjectAnimator.ofObject(this, "backgroundResource",
-                                       new ResourceIdEvaluator(), mCurrentImage, image);
+        // Create a regressive "animator" that merely swaps the front-back card mImages:
+        mSwapCardImages = ObjectAnimator.ofObject(this, "imageResource",
+                                                  new ResourceIdEvaluator(), mCurrentImage, image);
 
         // Duration 0 seems to work fine to get a single frame, but might need to be a '1':
-        swap.setDuration(0);
+        mSwapCardImages.setDuration(0);
         mCurrentImage = image;
 
-        // Create and start an Animator set with the sequence: start, swap, finish:
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.play(start).before(swap);
-        animatorSet.play(finish).after(swap);
-        animatorSet.start();
+        // Create and start an Animator set with the sequence: mStartFlip, mSwapCardImages, mFfinishFlip:
+        AnimatorSet flipCardAnim = new AnimatorSet();
+        flipCardAnim.play(mStartFlip).before(mSwapCardImages);
+        flipCardAnim.play(mFfinishFlip).after(mSwapCardImages);
+        flipCardAnim.start();
     }
 
     public class ResourceIdEvaluator implements TypeEvaluator<Integer> {

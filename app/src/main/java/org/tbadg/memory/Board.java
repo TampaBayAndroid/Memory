@@ -15,13 +15,15 @@ import java.util.List;
 import java.util.Random;
 
 public class Board extends LinearLayout {
-
     private static final String TAG = "Board";
 
-    private static final int DEFAULT_NUM_MATCHES = 8;
-    private static final int CARDS_MATCHED_TIMEOUT_IN_MILLIS = 250;
+    private static final int MIN_NUM_MATCHES = 2;
+    private static final int MAX_NUM_MATCHES = 24;
+    private static final int DEFAULT_NUM_MATCHES = 4;
+    private static final int CARDS_MATCHED_TIMEOUT_IN_MILLIS = Card.CARD_FLIP_MSECS;
     private static final int NO_MATCH_TIMEOUT_IN_MILLIS = 1000;
-    private static final int WINNER_NOTIFICATION_DELAY_IN_MILLIS = 500;
+    private static final int WINNER_NOTIFICATION_DELAY_IN_MILLIS = Card.CARD_FLIP_MSECS * 2;
+
 
     private int mNumMatches;
     private Runnable mOnWinnerRunnable;
@@ -61,8 +63,10 @@ public class Board extends LinearLayout {
         if (numberOfMatches == mNumMatches)
             return;
 
-        if (numberOfMatches < 2 || numberOfMatches > 24)
-            throw new IllegalArgumentException("Number of matches must be between 2 and 24 inclusive.");
+        if (numberOfMatches < MIN_NUM_MATCHES || numberOfMatches > MAX_NUM_MATCHES)
+            throw new IllegalArgumentException(
+                    String.format("Number of matches must be between %d and %d inclusive.",
+                                  MIN_NUM_MATCHES, MAX_NUM_MATCHES));
 
         mNumMatches = numberOfMatches;
         removeAllViews();
