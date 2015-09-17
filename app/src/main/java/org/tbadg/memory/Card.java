@@ -26,7 +26,7 @@ public class Card extends Button {
 
     // Animators used for flipping a card:
     ValueAnimator mStartFlip = null;
-    ValueAnimator mFfinishFlip = null;
+    ValueAnimator mFinishFlip = null;
     ValueAnimator mSwapCardImages = null;
     private int mCurrentImage;
 
@@ -51,9 +51,9 @@ public class Card extends Button {
         // Create animator used to finish flipping a card. At the start, the card edge appears
         //   to be facing the user. Then the new card image is rotated into view until it is fully
         //   displayed.
-        mFfinishFlip = ObjectAnimator.ofFloat(this, "rotationY", -HALF_CARD_FLIP_DEGREES, 0);
-        mFfinishFlip.setDuration(HALF_CARD_FLIP_MSECS);
-        mFfinishFlip.setInterpolator(new DecelerateInterpolator());
+        mFinishFlip = ObjectAnimator.ofFloat(this, "rotationY", -HALF_CARD_FLIP_DEGREES, 0);
+        mFinishFlip.setDuration(HALF_CARD_FLIP_MSECS);
+        mFinishFlip.setInterpolator(new DecelerateInterpolator());
 
         resourceLoadingFinished = true;
     }
@@ -114,10 +114,10 @@ public class Card extends Button {
         mSwapCardImages.setDuration(0);
         mCurrentImage = image;
 
-        // Create and start an Animator set with the sequence: mStartFlip, mSwapCardImages, mFfinishFlip:
+        // Create and mStartFlip an Animator set with the sequence: mStartFlip, mSwapCardImages, mFinishFlip:
         AnimatorSet flipCardAnim = new AnimatorSet();
         flipCardAnim.play(mStartFlip).before(mSwapCardImages);
-        flipCardAnim.play(mFfinishFlip).after(mSwapCardImages);
+        flipCardAnim.play(mFinishFlip).after(mSwapCardImages);
         flipCardAnim.start();
     }
 
