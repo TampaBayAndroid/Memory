@@ -3,7 +3,7 @@
               android:layout_height="wrap_content"
               android:layout_gravity="center"
               android:layout_margin="@dimen/activity_horizontal_margin"
-              android:background="@drawable/rounded_frame"
+              android:background="@drawable/scores_bg"
               android:orientation="vertical"
               android:onClick="dismissScores">
 
