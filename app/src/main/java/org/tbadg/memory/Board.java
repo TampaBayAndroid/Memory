@@ -218,7 +218,7 @@ public class Board extends LinearLayout {
 
     private void doMatch() {
 //        mMatchesMade++;
-        postDelayed(hideCards, CARDS_MATCHED_TIMEOUT_IN_MILLIS);
+        postDelayed(removeCards, CARDS_MATCHED_TIMEOUT_IN_MILLIS);
         mSoundsEffects.play(SoundsEffects.Type.MATCH);
 
         if (--mMatchesShown <= 0 && mOnWinnerRunnable != null)
@@ -281,12 +281,12 @@ public class Board extends LinearLayout {
             doNoMatch();
     }
 
-    private final Runnable hideCards = new Runnable() {
+    private final Runnable removeCards = new Runnable() {
         @Override
         public void run() {
             // Hide selected cards
-            mFirstCard.hide();
-            mSecondCard.hide();
+            mFirstCard.remove();
+            mSecondCard.remove();
 
             mFirstCard = null;
             mSecondCard = null;

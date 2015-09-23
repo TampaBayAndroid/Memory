@@ -7,6 +7,7 @@ import android.animation.ValueAnimator;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ public class Card extends ImageView {
     private static final int CARD_FLIP_DEGREES = 180;
     private static final int HALF_CARD_FLIP_DEGREES = CARD_FLIP_DEGREES / 2;
     private static final int HALF_CARD_FLIP_MSECS = CARD_FLIP_MSECS / 2;
+    private static final int CARD_REMOVE_MSECS = 750;
 
     private Integer mValue;
     private int mImages[] = new int[MemoryActivity.MAX_MATCHES];
@@ -29,6 +31,9 @@ public class Card extends ImageView {
     ValueAnimator mFinishFlip = null;
     ValueAnimator mSwapCardImages = null;
     private int mCurrentImage;
+
+    // Animator set used for removing a card:
+    AnimatorSet mRemoveCardAnimSet = null;
 
 
     public Card(Context context) {
@@ -58,6 +63,16 @@ public class Card extends ImageView {
         mFinishFlip.setDuration(HALF_CARD_FLIP_MSECS);
         mFinishFlip.setInterpolator(new DecelerateInterpolator());
 
+        // Create animators to remove a card by shrinking it to nothing:
+        ValueAnimator removeCardX = ObjectAnimator.ofFloat(this, "scaleX", 1f, 0f);
+        ValueAnimator removeCardY = ObjectAnimator.ofFloat(this, "scaleY", 1f, 0f);
+
+        // Create animator set used to remove a card:
+        mRemoveCardAnimSet = new AnimatorSet();
+        mRemoveCardAnimSet.setDuration(CARD_REMOVE_MSECS);
+        mRemoveCardAnimSet.setInterpolator(new AccelerateDecelerateInterpolator());
+        mRemoveCardAnimSet.play(removeCardX).with(removeCardY);
+
         resourceLoadingFinished = true;
     }
 
@@ -77,12 +92,20 @@ public class Card extends ImageView {
         requestLayout();
     }
 
+    public void remove() {
+        mRemoveCardAnimSet.start();
+    }
+
     public void showBack() {
+        setScaleX(1f);
+        setScaleY(1f);
         setVisibility(View.VISIBLE);
         setImageResource(R.drawable.card_back);
     }
 
     public void showFront() {
+        setScaleX(1f);
+        setScaleY(1f);
         setVisibility(View.VISIBLE);
         Log.d(TAG, "Resource ID = " + mValue);
         setImageResource(mImages[mValue]);
