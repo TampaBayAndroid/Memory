@@ -38,6 +38,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:onClick="onPopupButtonClicked"
+        android:background="@drawable/winner_bg"
+        android:padding="@dimen/winner_padding"
+        android:layout_marginBottom="@dimen/winner_padding"
         android:text="@string/winner_popup"
         android:visibility="visible"/>
 
