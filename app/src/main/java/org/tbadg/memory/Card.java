@@ -9,10 +9,10 @@ import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.Button;
+import android.widget.ImageView;
 
 
-public class Card extends Button {
+public class Card extends ImageView {
     public static final int CARD_FLIP_MSECS = 750;
 
     private static final String TAG = "Card";
@@ -34,6 +34,9 @@ public class Card extends Button {
     public Card(Context context) {
         super(context);
         setup(context);
+
+        setScaleType(ScaleType.FIT_CENTER);
+        setBackgroundResource(R.drawable.card_bg);
     }
 
     public void setup(Context context) {
@@ -76,15 +79,13 @@ public class Card extends Button {
 
     public void showBack() {
         setVisibility(View.VISIBLE);
-//        setText("");
-        setBackgroundResource(R.drawable.card_back);
+        setImageResource(R.drawable.card_back);
     }
 
     public void showFront() {
         setVisibility(View.VISIBLE);
-//        setText(String.valueOf(mValue));
         Log.d(TAG, "Resource ID = " + mValue);
-        setBackgroundResource(mImages[mValue]);
+        setImageResource(mImages[mValue]);
     }
 
     public boolean equals(Card other) {
