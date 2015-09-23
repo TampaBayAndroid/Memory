@@ -23,6 +23,7 @@ public class Board extends LinearLayout {
     private static final int CARDS_MATCHED_TIMEOUT_IN_MILLIS = Card.CARD_FLIP_MSECS;
     private static final int NO_MATCH_TIMEOUT_IN_MILLIS = 1000;
     private static final int WINNER_NOTIFICATION_DELAY_IN_MILLIS = Card.CARD_FLIP_MSECS * 2;
+    private final int CARD_MARGIN = Math.round(getResources().getDimension(R.dimen.card_margin));
 
 
     private int mNumMatches;
@@ -72,9 +73,13 @@ public class Board extends LinearLayout {
         removeAllViews();
         setupDimensions();
 
-        LinearLayout.LayoutParams params
+        LinearLayout.LayoutParams rowParams
                 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
+                                                ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
+        LinearLayout.LayoutParams cardParams
+                = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                                                ViewGroup.LayoutParams.MATCH_PARENT, 1.0f);
+        cardParams.setMargins(CARD_MARGIN, CARD_MARGIN, CARD_MARGIN, CARD_MARGIN);
 
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT)
             setOrientation(LinearLayout.HORIZONTAL);
@@ -91,12 +96,12 @@ public class Board extends LinearLayout {
             LinearLayout row = new LinearLayout(getContext());
             //noinspection ResourceType
             row.setOrientation(otherOrientation(this.getOrientation()));
-            addView(row, params);
+            addView(row, rowParams);
 
             // Create mNumCols cards per row:
             for (int j = 0; j < mNumCols; j++) {
                 Card card = new Card(getContext());
-                row.addView(card, params);
+                row.addView(card, cardParams);
                 card.setOnTouchListener(cardOnTouchListener);
             }
         }
