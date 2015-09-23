@@ -23,4 +23,6 @@
     <string name="matches">Matches</string>
     <string name="guesses">Guesses</string>
     <string name="time">Time</string>
+
+    <string name="splash_image">Splash Image</string>
 </resources>
